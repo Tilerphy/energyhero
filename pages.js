@@ -90,7 +90,7 @@ app.post("/login", (req,res)=>{
 		var cred = JSON.parse(data.toString());
 		if(cred.password == "1qaz2wsxE" && cred.username){
 			res.writeHead(200, {
-				'Set-Cookie':"heroId="+cred.username+"; HttpOnly"
+				'Set-Cookie':"heroId="+new Buffer(cred.username).toString("base64")+"; HttpOnly"
 			});
 			res.end("ok");
 		}else{
