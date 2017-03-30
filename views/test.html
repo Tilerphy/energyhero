@@ -1,0 +1,87 @@
+{% extends "template.html" %}
+{% block title %}Test{% endblock  %}
+{% block css %}
+<style type="text/css">
+	body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"Microsoft YaHei";}
+	</style>
+{% endblock %}
+{% block script %}
+
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=tXUlN9r98GPmRnMioGVBFyrc"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+$(function(){
+
+var client = io.connect("/debug");
+var map = null;
+var loaded = false;
+var users = {};
+var currentUser = "{{user}}";
+client.on("usergone", function(username){
+	map.removeOverlay(users[username].marker);
+	users[username] = null;
+});
+client.on("baidu_position", function(position){
+
+	var point = new BMap.Point(position.longitude,position.latitude);
+	if(loaded == false){
+
+                map = loadBaiduMap(users[currentUser]);
+
+        }
+
+	if(users[position.user] == null){
+		users[position.user] = {};
+		users[position.user].position = position;
+	        users[position.user].point = point;
+		users[position.user].marker = new BMap.Marker(users[position.user].point);
+		users[position.user].marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+		map.addOverlay(users[position.user].marker);
+	}
+	
+	users[position.user].position = position;
+	users[position.user].point = point;	
+	users[position.user].marker.setPosition(users[position.user].point);
+	if(users[currentUser]){
+		map.centerAndZoom(users[currentUser].point, 16);	
+	}
+	loaded = true;
+});
+
+function loadBaiduMap(){
+	var map = new BMap.Map("allmap"); 
+	map.centerAndZoom(new BMap.Point(125,43), 16);  
+	map.addControl(new BMap.MapTypeControl());      
+  	map.enableScrollWheelZoom(true);
+	return map;
+}
+
+function getLocation(){
+               var options={
+		   timeout: 5000
+               }
+               if(navigator.geolocation){
+                   navigator.geolocation.watchPosition(onSuccess, onError,options);
+                   
+               }else{
+                  $("#p").text("not supported.");
+               }
+           }
+function onError(e){
+	client.emit("position", {longitude:125, latitude: 43});
+}
+
+function onSuccess(position){
+	client.emit("position", {longitude:position.coords.longitude, latitude: position.coords.latitude});
+	//$("#p").text("Longitude: "+position.coords.longitude +", Latitude: "+position.coords.latitude);
+}
+
+getLocation();
+
+});
+</script>
+{% endblock %}
+{% block content %}
+<div id="allmap"></div>
+<p id="p"></p>
+{% endblock %}

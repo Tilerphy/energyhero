@@ -1,0 +1,21 @@
+<html lang="zh-cn">
+    <head>
+        <meta charset='utf-8'>
+        <title>{% block title %}{% endblock %}</title>
+        
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+        
+        <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+        <script src="/js/jquery.min.js"></script>
+        <script src="/js/bootstrap.min.js"></script>
+        <!--<script src="/js/socket.io.js"></script>-->
+        <!--<script src="/js/common.js"></script>-->
+        <!--<link type="text/css" rel="stylesheet" href="/css/common.css">-->
+        {% block css %}{% endblock %}
+        {% block script %}{% endblock %}
+    </head>
+    <body>
+            {% block content %}{% endblock %}
+       
+    </body>
+</html>

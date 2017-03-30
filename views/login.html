@@ -1,0 +1,27 @@
+{% extends "template.html" %}
+{% block title %} Login {% endblock %}
+{% block css %}{% endblock %}
+{% block script%}
+<script>
+$(function(){
+
+	$("#loginButton").click(function(e){
+		$.post("/login", JSON.stringify({username: $("#username").val(), password:$("#password").val()}), function(res){
+			if(res == "ok"){
+				window.location.href="/test";
+			}else{
+				document.write("Login failed.");
+			}
+		});
+	});
+});
+</script>
+{% endblock %}
+{% block content%}
+
+<div class="loginForm">
+	<input class = "username" type="text" id= "username">
+	<input class ="password" type="password" id="password">
+	<input class = "loginButton" value= "Login" type="button" id="loginButton">
+</div>
+{% endblock %}
